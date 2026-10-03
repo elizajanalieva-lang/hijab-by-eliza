@@ -8,35 +8,113 @@
   <style>
     :root { --accent:#b79a82; --dark:#201b18; }
     * { box-sizing:border-box; }
-    html,body { margin:0; width:100%; height:100%; overflow:hidden; background:#111; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-    #stage { position:fixed; inset:0; background:#111; overflow:hidden; }
-    video, canvas { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+    html,body {
+      margin:0;
+      width:100%;
+      height:100%;
+      overflow:hidden;
+      background:#111;
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    }
+    #stage {
+      position:fixed;
+      inset:0;
+      background:#111;
+      overflow:hidden;
+    }
+    video, canvas {
+      position:absolute;
+      inset:0;
+      width:100%;
+      height:100%;
+      object-fit:cover;
+    }
     video { transform:scaleX(-1); }
     canvas { pointer-events:none; }
-    #ui { position:fixed; inset:0; pointer-events:none; display:flex; flex-direction:column; justify-content:space-between; padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom); }
-    .top { display:flex; justify-content:space-between; align-items:center; padding-top:14px; }
-    .brand { color:white; text-shadow:0 1px 5px #0008; font-weight:700; letter-spacing:.02em; }
-    .pill { pointer-events:auto; border:0; background:#fff; color:var(--dark); border-radius:999px; padding:10px 14px; font-weight:600; }
-    .bottom { display:flex; flex-direction:column; align-items:center; gap:12px; padding-bottom:18px; }
-    #status { color:#fff; background:#0008; border-radius:999px; padding:8px 13px; font-size:13px; }
-    #start { pointer-events:auto; border:0; border-radius:999px; padding:15px 26px; background:var(--accent); color:#fff; font-size:16px; font-weight:700; box-shadow:0 4px 18px #0005; }
-    #hint { color:#fff; font-size:12px; opacity:.85; text-align:center; max-width:300px; text-shadow:0 1px 4px #000; }
+    #ui {
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
+    }
+    .top {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding-top:14px;
+    }
+    .brand {
+      color:white;
+      text-shadow:0 1px 5px #0008;
+      font-weight:700;
+      letter-spacing:.02em;
+    }
+    .pill {
+      pointer-events:auto;
+      border:0;
+      background:#fff;
+      color:var(--dark);
+      border-radius:999px;
+      padding:10px 14px;
+      font-weight:600;
+    }
+    .bottom {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:12px;
+      padding-bottom:18px;
+    }
+    #status {
+      color:#fff;
+      background:#0008;
+      border-radius:999px;
+      padding:8px 13px;
+      font-size:13px;
+    }
+    #start {
+      pointer-events:auto;
+      border:0;
+      border-radius:999px;
+      padding:15px 26px;
+      background:var(--accent);
+      color:#fff;
+      font-size:16px;
+      font-weight:700;
+      box-shadow:0 4px 18px #0005;
+    }
+    #hint {
+      color:#fff;
+      font-size:12px;
+      opacity:.85;
+      text-align:center;
+      max-width:300px;
+      text-shadow:0 1px 4px #000;
+    }
   </style>
 </head>
 <body>
+
 <div id="stage">
   <video id="video" playsinline muted></video>
   <canvas id="overlay"></canvas>
 </div>
+
 <div id="ui">
   <div class="top">
     <div class="brand">Hijab by Eliza · Natural</div>
     <button id="flip" class="pill">↔︎</button>
   </div>
+
   <div class="bottom">
     <div id="status">Нажми «Запустить камеру»</div>
     <button id="start">Запустить камеру</button>
-    <div id="hint">Первый прототип рассчитан на взгляд почти прямо в камеру.</div>
+    <div id="hint">
+      Первый прототип рассчитан на взгляд почти прямо в камеру.
+    </div>
   </div>
 </div>
 
@@ -47,9 +125,11 @@ import { FaceLandmarker, FilesetResolver } from
 const video = document.getElementById("video");
 const canvas = document.getElementById("overlay");
 const ctx = canvas.getContext("2d");
+
 const startBtn = document.getElementById("start");
 const flipBtn = document.getElementById("flip");
 const statusEl = document.getElementById("status");
+
 const asset = new Image();
 asset.src = "./hijab_ar_asset_v1.png";
 
@@ -59,13 +139,17 @@ let mirror = true;
 let running = false;
 let lastVideoTime = -1;
 
-function setStatus(s) { statusEl.textContent = s; }
+function setStatus(s) {
+  statusEl.textContent = s;
+}
 
 async function setupLandmarker() {
   setStatus("Загружаю распознавание лица…");
+
   const vision = await FilesetResolver.forVisionTasks(
     "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
   );
+
   landmarker = await FaceLandmarker.createFromOptions(vision, {
     baseOptions: {
       modelAssetPath:
@@ -83,7 +167,10 @@ async function setupLandmarker() {
 async function startCamera() {
   try {
     startBtn.disabled = true;
-    if (!landmarker) await setupLandmarker();
+
+    if (!landmarker) {
+      await setupLandmarker();
+    }
 
     stream = await navigator.mediaDevices.getUserMedia({
       video: {
@@ -98,10 +185,14 @@ async function startCamera() {
     await video.play();
 
     resizeCanvas();
+
     running = true;
     startBtn.style.display = "none";
+
     setStatus("Готово — смотри в камеру");
+
     requestAnimationFrame(loop);
+
   } catch (e) {
     console.error(e);
     startBtn.disabled = false;
@@ -115,19 +206,21 @@ function resizeCanvas() {
 }
 
 function drawHijab(lm) {
-  // Landmark indices: 33 and 263 are outer eye corners;
-  // 10 is forehead/top, 152 is chin.
-  const pL = lm[33], pR = lm[263], pTop = lm[10], pBottom = lm[152];
+  const pL = lm[33];
+  const pR = lm[263];
+  const pTop = lm[10];
+  const pBottom = lm[152];
+
   if (!pL || !pR || !pTop || !pBottom) return;
 
-  const W = canvas.width, H = canvas.height;
+  const W = canvas.width;
+  const H = canvas.height;
 
-  // The video is mirrored in CSS. Mirror x-coordinates to match the displayed video.
   const mx = x => mirror ? (1 - x) : x;
 
   const leftX = mx(pL.x) * W;
   const rightX = mx(pR.x) * W;
-  const topX = mx(pTop.x) * W;
+
   const topY = pTop.y * H;
   const bottomY = pBottom.y * H;
 
@@ -135,61 +228,120 @@ function drawHijab(lm) {
   const faceWidth = Math.abs(rightX - leftX);
   const faceHeight = Math.abs(bottomY - topY);
 
-  // Conservative first-pass fit for the supplied asset.
-  const drawW = faceWidth * 3.05;
-  const drawH = drawW * (asset.naturalHeight / asset.naturalWidth);
+  const drawW = faceWidth * 3.55;
+  const drawH =
+    drawW * (asset.naturalHeight / asset.naturalWidth);
 
-  // Slightly above the face center so the opening aligns with the face.
   const drawX = faceCenterX - drawW / 2;
-  const drawY = topY - faceHeight * 0.70;
+  const drawY = topY - faceHeight * 0.82;
 
-  // Rotate with the eye line.
+  const screenLeftX = mx(pR.x) * W;
+  const screenRightX = mx(pL.x) * W;
+
+  const screenLeftY = pR.y * H;
+  const screenRightY = pL.y * H;
+
   const angle = Math.atan2(
-    (pR.y - pL.y) * H,
-    (mx(pR.x) - mx(pL.x)) * W
+    screenRightY - screenLeftY,
+    screenRightX - screenLeftX
   );
 
   ctx.save();
-  ctx.translate(drawX + drawW/2, drawY + drawH/2);
+
+  ctx.translate(
+    drawX + drawW / 2,
+    drawY + drawH / 2
+  );
+
   ctx.rotate(angle);
+
   ctx.globalAlpha = 0.98;
-  ctx.drawImage(asset, -drawW/2, -drawH/2, drawW, drawH);
+
+  ctx.drawImage(
+    asset,
+    -drawW / 2,
+    -drawH / 2,
+    drawW,
+    drawH
+  );
+
   ctx.restore();
 }
 
 function loop() {
   if (!running) return;
-  if (video.readyState >= 2 && video.currentTime !== lastVideoTime) {
+
+  if (
+    video.readyState >= 2 &&
+    video.currentTime !== lastVideoTime
+  ) {
     lastVideoTime = video.currentTime;
-    const result = landmarker.detectForVideo(video, performance.now());
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    if (result.faceLandmarks && result.faceLandmarks.length) {
+
+    const result =
+      landmarker.detectForVideo(
+        video,
+        performance.now()
+      );
+
+    ctx.clearRect(
+      0,
+      0,
+      canvas.width,
+      canvas.height
+    );
+
+    if (
+      result.faceLandmarks &&
+      result.faceLandmarks.length
+    ) {
       drawHijab(result.faceLandmarks[0]);
       setStatus("Hijab ON · Natural");
     } else {
       setStatus("Поднеси лицо к камере");
     }
   }
+
   requestAnimationFrame(loop);
 }
 
 flipBtn.addEventListener("click", async () => {
   mirror = !mirror;
+
   if (stream) {
     stream.getTracks().forEach(t => t.stop());
+
     stream = null;
     running = false;
+
     startBtn.style.display = "";
     startBtn.disabled = false;
-    video.style.transform = mirror ? "scaleX(-1)" : "scaleX(1)";
+
+    video.style.transform =
+      mirror ? "scaleX(-1)" : "scaleX(1)";
+
     setStatus("Камера переключена");
   }
 });
 
-startBtn.addEventListener("click", startCamera);
-window.addEventListener("resize", resizeCanvas);
-video.addEventListener("loadedmetadata", resizeCanvas);
-asset.onload = () => setStatus("Нажми «Запустить камеру»");
+startBtn.addEventListener(
+  "click",
+  startCamera
+);
+
+window.addEventListener(
+  "resize",
+  resizeCanvas
+);
+
+video.addEventListener(
+  "loadedmetadata",
+  resizeCanvas
+);
+
+asset.onload = () => {
+  setStatus("Нажми «Запустить камеру»");
+};
 </script>
+
 </body>
 </html>
