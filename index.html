@@ -1,157 +1,153 @@
 <!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="utf-8">
+<meta charset="utf-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width,initial-scale=1,viewport-fit=cover"
-  >
+<meta name="viewport"
+content="width=device-width,initial-scale=1,viewport-fit=cover">
 
-  <meta name="theme-color" content="#bda38e">
+<meta name="theme-color" content="#bda38e">
 
-  <title>Hijab by Eliza — Natural</title>
+<title>Hijab by Eliza — Natural</title>
 
-  <style>
-    :root {
-      --accent: #b79a82;
-      --dark: #201b18;
-    }
+<style>
 
-    * {
-      box-sizing: border-box;
-    }
+:root{
+  --accent:#b79a82;
+  --dark:#201b18;
+}
 
-    html,
-    body {
-      margin: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    }
+*{
+  box-sizing:border-box;
+}
 
-    #stage {
-      position: fixed;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-    }
+html,
+body{
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#111;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+}
 
-    video,
-    canvas {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
+#stage{
+  position:fixed;
+  inset:0;
+  overflow:hidden;
+  background:#111;
+}
 
-    video {
-      transform: scaleX(-1);
-    }
+video,
+canvas{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    canvas {
-      pointer-events: none;
-    }
+video{
+  transform:scaleX(-1);
+}
 
-    #ui {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
+canvas{
+  pointer-events:none;
+}
 
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+#ui{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
 
-      padding:
-        env(safe-area-inset-top)
-        16px
-        env(safe-area-inset-bottom);
-    }
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 
-    .top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding-top: 14px;
-    }
+  padding:
+    env(safe-area-inset-top)
+    16px
+    env(safe-area-inset-bottom);
+}
 
-    .brand {
-      color: white;
-      font-weight: 700;
-      letter-spacing: .02em;
-      text-shadow: 0 1px 5px #0008;
-    }
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding-top:14px;
+}
 
-    .pill {
-      pointer-events: auto;
+.brand{
+  color:white;
+  font-weight:700;
+  font-size:18px;
+  text-shadow:0 1px 5px #0008;
+}
 
-      border: 0;
-      background: white;
-      color: var(--dark);
+.pill{
+  pointer-events:auto;
+  border:0;
+  background:white;
+  color:var(--dark);
 
-      border-radius: 999px;
-      padding: 10px 14px;
+  border-radius:999px;
+  padding:11px 15px;
 
-      font-weight: 600;
-      font-size: 16px;
-    }
+  font-size:16px;
+  font-weight:600;
+}
 
-    .bottom {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+.bottom{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:12px;
+  padding-bottom:18px;
+}
 
-      gap: 12px;
-      padding-bottom: 18px;
-    }
+#status{
+  color:white;
+  background:#0008;
 
-    #status {
-      color: white;
-      background: #0008;
+  border-radius:999px;
+  padding:8px 13px;
 
-      border-radius: 999px;
-      padding: 8px 13px;
+  font-size:13px;
+}
 
-      font-size: 13px;
-    }
+#start{
+  pointer-events:auto;
 
-    #start {
-      pointer-events: auto;
+  border:0;
+  border-radius:999px;
 
-      border: 0;
-      border-radius: 999px;
+  padding:15px 26px;
 
-      padding: 15px 26px;
+  background:var(--accent);
+  color:white;
 
-      background: var(--accent);
-      color: white;
+  font-size:16px;
+  font-weight:700;
 
-      font-size: 16px;
-      font-weight: 700;
+  box-shadow:0 4px 18px #0005;
+}
 
-      box-shadow: 0 4px 18px #0005;
-    }
+#hint{
+  color:white;
+  font-size:12px;
+  opacity:.85;
 
-    #hint {
-      color: white;
-      font-size: 12px;
-      opacity: .85;
+  text-align:center;
+  max-width:310px;
 
-      text-align: center;
-      max-width: 300px;
+  text-shadow:0 1px 4px #000;
+}
 
-      text-shadow: 0 1px 4px #000;
-    }
-  </style>
+</style>
 </head>
 
 <body>
@@ -162,8 +158,8 @@
     id="video"
     playsinline
     muted
-    autoplay
-  ></video>
+    autoplay>
+  </video>
 
   <canvas id="overlay"></canvas>
 
@@ -180,9 +176,8 @@
 
     <button
       id="flip"
-      class="pill"
-    >
-      ↔︎
+      class="pill">
+      ↔
     </button>
 
   </div>
@@ -199,7 +194,7 @@
     </button>
 
     <div id="hint">
-      Смотри прямо в камеру. Хиджаб автоматически следует за лицом.
+      Смотри прямо в камеру — хиджаб следует за лицом.
     </div>
 
   </div>
@@ -214,45 +209,46 @@ import {
   FilesetResolver
 }
 from
-  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
+"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
 
-/* =========================
+/* =========================================
    ELEMENTS
-========================= */
+========================================= */
 
 const video =
-  document.getElementById("video");
+document.getElementById("video");
 
 const canvas =
-  document.getElementById("overlay");
+document.getElementById("overlay");
 
 const ctx =
-  canvas.getContext("2d");
+canvas.getContext("2d");
 
 const startBtn =
-  document.getElementById("start");
+document.getElementById("start");
 
 const flipBtn =
-  document.getElementById("flip");
+document.getElementById("flip");
 
 const statusEl =
-  document.getElementById("status");
+document.getElementById("status");
 
 
-/* =========================
+/* =========================================
    HIJAB IMAGE
-========================= */
+========================================= */
 
-const asset = new Image();
+const asset =
+new Image();
 
 asset.src =
-  "./hijab_ar_asset_v1.png";
+"./hijab_ar_asset_v1.png";
 
 
-/* =========================
-   VARIABLES
-========================= */
+/* =========================================
+   STATE
+========================================= */
 
 let landmarker = null;
 
@@ -265,34 +261,82 @@ let running = false;
 let lastVideoTime = -1;
 
 
-/* =========================
+/* =========================================
+   SMOOTHING
+========================================= */
+
+let smoothX = null;
+let smoothY = null;
+let smoothScale = null;
+let smoothAngle = null;
+
+
+/* =========================================
+   IMPORTANT:
+   COORDINATES OF THE FACE OPENING
+   INSIDE OUR PNG
+=========================================
+
+PNG size:
+
+1408 × 768
+
+Approximate transparent face opening:
+
+left   = 555
+right  = 835
+
+top    = 105
+bottom = 455
+
+These values correspond to the
+actual Hijab by Eliza PNG.
+========================================= */
+
+const OPEN_LEFT   = 555;
+const OPEN_RIGHT  = 835;
+const OPEN_TOP    = 105;
+const OPEN_BOTTOM = 455;
+
+const OPEN_WIDTH =
+OPEN_RIGHT - OPEN_LEFT;
+
+const OPEN_HEIGHT =
+OPEN_BOTTOM - OPEN_TOP;
+
+const OPEN_CENTER_X =
+(OPEN_LEFT + OPEN_RIGHT) / 2;
+
+
+/* =========================================
    STATUS
-========================= */
+========================================= */
 
-function setStatus(text) {
+function setStatus(text){
 
-  statusEl.textContent = text;
+  statusEl.textContent =
+  text;
 
 }
 
 
-/* =========================
+/* =========================================
    CANVAS
-========================= */
+========================================= */
 
-function resizeCanvas() {
+function resizeCanvas(){
 
   const rect =
-    canvas.getBoundingClientRect();
+  canvas.getBoundingClientRect();
 
   const dpr =
-    window.devicePixelRatio || 1;
+  window.devicePixelRatio || 1;
 
   canvas.width =
-    Math.round(rect.width * dpr);
+  Math.round(rect.width * dpr);
 
   canvas.height =
-    Math.round(rect.height * dpr);
+  Math.round(rect.height * dpr);
 
   ctx.setTransform(
     dpr,
@@ -302,70 +346,74 @@ function resizeCanvas() {
     0,
     0
   );
+
 }
 
 
-/* =========================
+/* =========================================
    MEDIAPIPE
-========================= */
+========================================= */
 
-async function setupLandmarker() {
+async function setupLandmarker(){
 
   setStatus(
     "Загружаю распознавание лица…"
   );
 
   const vision =
-    await FilesetResolver.forVisionTasks(
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-    );
+  await FilesetResolver.forVisionTasks(
+
+    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+
+  );
 
 
   landmarker =
-    await FaceLandmarker.createFromOptions(
-      vision,
-      {
+  await FaceLandmarker.createFromOptions(
+    vision,
+    {
 
-        baseOptions: {
+      baseOptions:{
 
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+        modelAssetPath:
+        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
 
-          delegate: "GPU"
+        delegate:"GPU"
 
-        },
+      },
 
-        runningMode: "VIDEO",
+      runningMode:"VIDEO",
 
-        numFaces: 1,
+      numFaces:1,
 
-        minFaceDetectionConfidence:
-          0.55,
+      minFaceDetectionConfidence:
+      0.55,
 
-        minFacePresenceConfidence:
-          0.55,
+      minFacePresenceConfidence:
+      0.55,
 
-        minTrackingConfidence:
-          0.55
+      minTrackingConfidence:
+      0.55
 
-      }
-    );
+    }
+  );
 
 }
 
 
-/* =========================
+/* =========================================
    CAMERA
-========================= */
+========================================= */
 
-async function startCamera() {
+async function startCamera(){
 
-  try {
+  try{
 
-    startBtn.disabled = true;
+    startBtn.disabled =
+    true;
 
 
-    if (!landmarker) {
+    if(!landmarker){
 
       await setupLandmarker();
 
@@ -373,32 +421,33 @@ async function startCamera() {
 
 
     stream =
-      await navigator.mediaDevices.getUserMedia({
+    await navigator.mediaDevices
+    .getUserMedia({
 
-        video: {
+      video:{
 
-          facingMode:
-            mirror
-              ? "user"
-              : "environment",
+        facingMode:
+        mirror
+        ? "user"
+        : "environment",
 
-          width: {
-            ideal: 1280
-          },
-
-          height: {
-            ideal: 720
-          }
-
+        width:{
+          ideal:1280
         },
 
-        audio: false
+        height:{
+          ideal:720
+        }
 
-      });
+      },
+
+      audio:false
+
+    });
 
 
     video.srcObject =
-      stream;
+    stream;
 
 
     await video.play();
@@ -407,11 +456,12 @@ async function startCamera() {
     resizeCanvas();
 
 
-    running = true;
+    running =
+    true;
 
 
     startBtn.style.display =
-      "none";
+    "none";
 
 
     setStatus(
@@ -422,14 +472,15 @@ async function startCamera() {
     requestAnimationFrame(loop);
 
 
-  } catch (error) {
+  }catch(error){
 
     console.error(error);
 
-    startBtn.disabled = false;
+    startBtn.disabled =
+    false;
 
     setStatus(
-      "Не удалось открыть камеру. Проверь разрешение камеры."
+      "Не удалось открыть камеру"
     );
 
   }
@@ -437,282 +488,468 @@ async function startCamera() {
 }
 
 
-/* =========================
-   VIDEO → SCREEN COORDINATES
-========================= */
+/* =========================================
+   VIDEO COORDINATES → SCREEN
+========================================= */
 
 function videoPointToScreen(
-  normalizedX,
-  normalizedY
-) {
+  x,
+  y
+){
 
   const videoW =
-    video.videoWidth;
+  video.videoWidth;
 
   const videoH =
-    video.videoHeight;
+  video.videoHeight;
 
 
   const screenW =
-    canvas.clientWidth;
+  canvas.clientWidth;
 
   const screenH =
-    canvas.clientHeight;
+  canvas.clientHeight;
 
 
-  if (
+  if(
     !videoW ||
-    !videoH ||
-    !screenW ||
-    !screenH
-  ) {
+    !videoH
+  ){
 
     return {
-      x: 0,
-      y: 0
+      x:0,
+      y:0
     };
 
   }
 
 
   /*
-    object-fit: cover
-
-    Определяем масштаб,
-    при котором видео полностью
-    покрывает экран.
+    Safari uses object-fit:cover.
   */
 
   const scale =
-    Math.max(
-      screenW / videoW,
-      screenH / videoH
-    );
+  Math.max(
+
+    screenW / videoW,
+
+    screenH / videoH
+
+  );
 
 
   const displayedW =
-    videoW * scale;
+  videoW * scale;
 
   const displayedH =
-    videoH * scale;
+  videoH * scale;
 
-
-  /*
-    Часть видео обрезается
-    по краям.
-  */
 
   const offsetX =
-    (screenW - displayedW) / 2;
+  (screenW - displayedW) / 2;
 
   const offsetY =
-    (screenH - displayedH) / 2;
+  (screenH - displayedH) / 2;
 
 
-  let x =
-    normalizedX *
-    videoW *
-    scale +
-    offsetX;
+  let screenX =
+  x * videoW * scale
+  + offsetX;
 
 
-  const y =
-    normalizedY *
-    videoH *
-    scale +
-    offsetY;
+  const screenY =
+  y * videoH * scale
+  + offsetY;
 
 
   /*
-    Фронтальная камера
-    зеркальная.
+    Front camera is mirrored.
   */
 
-  if (mirror) {
+  if(mirror){
 
-    x =
-      screenW - x;
+    screenX =
+    screenW - screenX;
 
   }
 
 
-  return {
-    x,
-    y
+  return{
+
+    x:screenX,
+
+    y:screenY
+
   };
 
 }
 
 
-/* =========================
+/* =========================================
+   SMOOTH NUMBER
+========================================= */
+
+function smooth(
+  oldValue,
+  newValue,
+  amount
+){
+
+  if(oldValue === null){
+
+    return newValue;
+
+  }
+
+  return (
+    oldValue +
+    (newValue - oldValue) *
+    amount
+  );
+
+}
+
+
+/* =========================================
+   ANGLE SMOOTHING
+========================================= */
+
+function smoothAngleValue(
+  oldValue,
+  newValue,
+  amount
+){
+
+  if(oldValue === null){
+
+    return newValue;
+
+  }
+
+
+  let difference =
+  newValue - oldValue;
+
+
+  while(
+    difference > Math.PI
+  ){
+
+    difference -=
+    Math.PI * 2;
+
+  }
+
+
+  while(
+    difference < -Math.PI
+  ){
+
+    difference +=
+    Math.PI * 2;
+
+  }
+
+
+  return(
+    oldValue +
+    difference * amount
+  );
+
+}
+
+
+/* =========================================
    DRAW HIJAB
-========================= */
+========================================= */
 
-function drawHijab(landmarks) {
+function drawHijab(
+  landmarks
+){
 
-  const leftEye =
-    landmarks[33];
+  /*
+    MediaPipe face landmarks:
 
-  const rightEye =
-    landmarks[263];
+    33  = left eye
+    263 = right eye
+    10  = forehead
+    152 = chin
+  */
+
+  const eye33 =
+  landmarks[33];
+
+  const eye263 =
+  landmarks[263];
 
   const forehead =
-    landmarks[10];
+  landmarks[10];
 
   const chin =
-    landmarks[152];
+  landmarks[152];
 
 
-  if (
-    !leftEye ||
-    !rightEye ||
+  if(
+    !eye33 ||
+    !eye263 ||
     !forehead ||
     !chin
-  ) {
+  ){
 
     return;
 
   }
 
 
-  /*
-    Переводим landmarks
-    в координаты экрана.
-  */
+  /* ---------------------------------------
+     Convert landmarks to screen coordinates
+  --------------------------------------- */
 
-  const left =
-    videoPointToScreen(
-      leftEye.x,
-      leftEye.y
-    );
-
-
-  const right =
-    videoPointToScreen(
-      rightEye.x,
-      rightEye.y
-    );
+  const p33 =
+  videoPointToScreen(
+    eye33.x,
+    eye33.y
+  );
 
 
-  const top =
-    videoPointToScreen(
-      forehead.x,
-      forehead.y
-    );
+  const p263 =
+  videoPointToScreen(
+    eye263.x,
+    eye263.y
+  );
 
 
-  const bottom =
-    videoPointToScreen(
-      chin.x,
-      chin.y
-    );
+  const pForehead =
+  videoPointToScreen(
+    forehead.x,
+    forehead.y
+  );
 
 
-  /*
-    Центр лица
-  */
+  const pChin =
+  videoPointToScreen(
+    chin.x,
+    chin.y
+  );
+
+
+  /* ---------------------------------------
+     IMPORTANT FIX:
+
+     On mirrored front camera,
+     anatomical right eye becomes
+     screen-left.
+
+     This prevents the 180° rotation.
+  --------------------------------------- */
+
+  const screenLeftEye =
+  mirror
+  ? p263
+  : p33;
+
+
+  const screenRightEye =
+  mirror
+  ? p33
+  : p263;
+
+
+  /* ---------------------------------------
+     Face center
+  --------------------------------------- */
 
   const centerX =
-    (left.x + right.x) / 2;
+  (
+    screenLeftEye.x +
+    screenRightEye.x
+  ) / 2;
 
 
-  /*
-    Ширина лица
-  */
+  /* ---------------------------------------
+     Face dimensions
+  --------------------------------------- */
 
   const faceWidth =
-    Math.abs(
-      right.x - left.x
-    );
+  Math.abs(
+    screenRightEye.x -
+    screenLeftEye.x
+  );
 
-
-  /*
-    Высота лица
-  */
 
   const faceHeight =
-    Math.abs(
-      bottom.y - top.y
-    );
+  Math.abs(
+    pChin.y -
+    pForehead.y
+  );
+
+
+  if(
+    faceWidth < 30 ||
+    faceHeight < 40
+  ){
+
+    return;
+
+  }
+
+
+  /* ---------------------------------------
+     SCALE FROM THE ACTUAL FACE OPENING
+  --------------------------------------- */
+
+  const scaleFromWidth =
+  faceWidth /
+  OPEN_WIDTH;
+
+
+  const scaleFromHeight =
+  faceHeight /
+  OPEN_HEIGHT;
 
 
   /*
-    Размер хиджаба.
-
-    Немного шире лица,
-    чтобы закрывать волосы,
-    уши и боковые части головы.
+    Slight extra room so the face
+    is completely inside the opening.
   */
 
-const drawW =
-    faceWidth * 5.2;
+  const scale =
+  Math.max(
+    scaleFromWidth,
+    scaleFromHeight
+  ) * 1.08;
 
 
-  const aspect =
-    asset.naturalHeight /
-    asset.naturalWidth;
+  const drawW =
+  asset.naturalWidth *
+  scale;
 
 
   const drawH =
-    drawW * aspect;
+  asset.naturalHeight *
+  scale;
 
 
-  /*
-    ВАЖНО:
+  /* ---------------------------------------
+     POSITION
 
-    верх изображения
-    начинается выше лба,
+     Put the PNG's transparent face opening
+     directly over the detected face.
+  --------------------------------------- */
 
-    но теперь положение
-    рассчитывается относительно
-    реального экрана.
-  */
-
-  const drawY =
-    top.y -
-    faceHeight * 0.62;
+  const targetX =
+  centerX -
+  OPEN_CENTER_X * scale;
 
 
-  const drawX =
-    centerX -
-    drawW / 2;
+  const targetY =
+  pForehead.y -
+  OPEN_TOP * scale;
 
 
-  /*
-    Наклон головы
-  */
+  /* ---------------------------------------
+     CORRECT HEAD ROTATION
+  --------------------------------------- */
 
-  const angle =
-    Math.atan2(
-      right.y - left.y,
-      right.x - left.x
-    );
+  const targetAngle =
+  Math.atan2(
 
+    screenRightEye.y -
+    screenLeftEye.y,
+
+    screenRightEye.x -
+    screenLeftEye.x
+
+  );
+
+
+  /* ---------------------------------------
+     SMOOTH MOVEMENT
+  --------------------------------------- */
+
+  smoothX =
+  smooth(
+    smoothX,
+    targetX,
+    0.35
+  );
+
+
+  smoothY =
+  smooth(
+    smoothY,
+    targetY,
+    0.35
+  );
+
+
+  smoothScale =
+  smooth(
+    smoothScale,
+    scale,
+    0.30
+  );
+
+
+  smoothAngle =
+  smoothAngleValue(
+    smoothAngle,
+    targetAngle,
+    0.30
+  );
+
+
+  const finalW =
+  asset.naturalWidth *
+  smoothScale;
+
+
+  const finalH =
+  asset.naturalHeight *
+  smoothScale;
+
+
+  /* ---------------------------------------
+     DRAW
+  --------------------------------------- */
 
   ctx.save();
 
 
   ctx.translate(
-    centerX,
-    drawY + drawH / 2
+    smoothX +
+    OPEN_CENTER_X *
+    smoothScale,
+
+    smoothY +
+    OPEN_TOP *
+    smoothScale
   );
 
 
-  ctx.rotate(angle);
+  ctx.rotate(
+    smoothAngle
+  );
 
 
   ctx.globalAlpha =
-    0.98;
+  0.98;
 
 
   ctx.drawImage(
+
     asset,
 
-    -drawW / 2,
-    -drawH / 2,
+    -OPEN_CENTER_X *
+    smoothScale,
 
-    drawW,
-    drawH
+    -OPEN_TOP *
+    smoothScale,
+
+    finalW,
+
+    finalH
+
   );
 
 
@@ -721,47 +958,53 @@ const drawW =
 }
 
 
-/* =========================
+/* =========================================
    MAIN LOOP
-========================= */
+========================================= */
 
-function loop() {
+function loop(){
 
-  if (!running) {
+  if(!running){
 
     return;
 
   }
 
 
-  if (
+  if(
     video.readyState >= 2 &&
     video.currentTime !== lastVideoTime
-  ) {
+  ){
 
     lastVideoTime =
-      video.currentTime;
+    video.currentTime;
 
 
     const result =
-      landmarker.detectForVideo(
-        video,
-        performance.now()
-      );
+    landmarker.detectForVideo(
 
+      video,
 
-    ctx.clearRect(
-      0,
-      0,
-      canvas.clientWidth,
-      canvas.clientHeight
+      performance.now()
+
     );
 
 
-    if (
+    ctx.clearRect(
+
+      0,
+      0,
+
+      canvas.clientWidth,
+      canvas.clientHeight
+
+    );
+
+
+    if(
       result.faceLandmarks &&
       result.faceLandmarks.length
-    ) {
+    ){
 
       drawHijab(
         result.faceLandmarks[0]
@@ -772,7 +1015,7 @@ function loop() {
         "Hijab ON · Natural"
       );
 
-    } else {
+    }else{
 
       setStatus(
         "Поднеси лицо к камере"
@@ -783,50 +1026,68 @@ function loop() {
   }
 
 
-  requestAnimationFrame(loop);
+  requestAnimationFrame(
+    loop
+  );
 
 }
 
 
-/* =========================
+/* =========================================
    FLIP CAMERA
-========================= */
+========================================= */
 
 flipBtn.addEventListener(
   "click",
-  async () => {
+  async ()=>{
 
     mirror =
-      !mirror;
+    !mirror;
 
 
-    if (stream) {
+    if(stream){
 
       stream
-        .getTracks()
-        .forEach(
-          track =>
-            track.stop()
-        );
+      .getTracks()
+      .forEach(
+        track =>
+        track.stop()
+      );
 
 
-      stream = null;
+      stream =
+      null;
 
-      running = false;
+
+      running =
+      false;
+
+
+      smoothX =
+      null;
+
+      smoothY =
+      null;
+
+      smoothScale =
+      null;
+
+      smoothAngle =
+      null;
 
 
       startBtn.style.display =
-        "";
+      "";
 
 
       startBtn.disabled =
-        false;
+      false;
 
 
       video.style.transform =
-        mirror
-          ? "scaleX(-1)"
-          : "scaleX(1)";
+      mirror
+      ? "scaleX(-1)"
+      : "scaleX(1)";
 
 
       setStatus(
@@ -839,9 +1100,9 @@ flipBtn.addEventListener(
 );
 
 
-/* =========================
+/* =========================================
    EVENTS
-========================= */
+========================================= */
 
 startBtn.addEventListener(
   "click",
@@ -862,13 +1123,13 @@ video.addEventListener(
 
 
 asset.onload =
-  () => {
+()=>{
 
-    setStatus(
-      "Нажми «Запустить камеру»"
-    );
+  setStatus(
+    "Нажми «Запустить камеру»"
+  );
 
-  };
+};
 
 </script>
 
