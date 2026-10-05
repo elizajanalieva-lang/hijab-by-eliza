@@ -2,16 +2,12 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1,viewport-fit=cover">
-
-<meta name="theme-color" content="#bda38e">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#b79a82">
 
 <title>Hijab by Eliza — Natural</title>
 
 <style>
-
 :root{
   --accent:#b79a82;
   --dark:#201b18;
@@ -21,18 +17,13 @@ content="width=device-width,initial-scale=1,viewport-fit=cover">
   box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
   margin:0;
   width:100%;
   height:100%;
   overflow:hidden;
   background:#111;
-  font-family:
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 #stage{
@@ -63,15 +54,10 @@ canvas{
   position:fixed;
   inset:0;
   pointer-events:none;
-
   display:flex;
   flex-direction:column;
   justify-content:space-between;
-
-  padding:
-    env(safe-area-inset-top)
-    16px
-    env(safe-area-inset-bottom);
+  padding:env(safe-area-inset-top) 16px env(safe-area-inset-bottom);
 }
 
 .top{
@@ -93,10 +79,8 @@ canvas{
   border:0;
   background:white;
   color:var(--dark);
-
   border-radius:999px;
   padding:11px 15px;
-
   font-size:16px;
   font-weight:600;
 }
@@ -112,27 +96,20 @@ canvas{
 #status{
   color:white;
   background:#0008;
-
   border-radius:999px;
   padding:8px 13px;
-
   font-size:13px;
 }
 
 #start{
   pointer-events:auto;
-
   border:0;
   border-radius:999px;
-
   padding:15px 26px;
-
   background:var(--accent);
   color:white;
-
   font-size:16px;
   font-weight:700;
-
   box-shadow:0 4px 18px #0005;
 }
 
@@ -140,13 +117,10 @@ canvas{
   color:white;
   font-size:12px;
   opacity:.85;
-
   text-align:center;
   max-width:310px;
-
   text-shadow:0 1px 4px #000;
 }
-
 </style>
 </head>
 
@@ -165,7 +139,6 @@ canvas{
 
 </div>
 
-
 <div id="ui">
 
   <div class="top">
@@ -174,14 +147,11 @@ canvas{
       Hijab by Eliza · Natural
     </div>
 
-    <button
-      id="flip"
-      class="pill">
+    <button id="flip" class="pill">
       ↔
     </button>
 
   </div>
-
 
   <div class="bottom">
 
@@ -208,104 +178,89 @@ import {
   FaceLandmarker,
   FilesetResolver
 }
-from
-"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
+from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
 
-
-/* =========================================
-   ELEMENTS
-========================================= */
 
 const video =
-document.getElementById("video");
+  document.getElementById("video");
 
 const canvas =
-document.getElementById("overlay");
+  document.getElementById("overlay");
 
 const ctx =
-canvas.getContext("2d");
+  canvas.getContext("2d");
 
 const startBtn =
-document.getElementById("start");
+  document.getElementById("start");
 
 const flipBtn =
-document.getElementById("flip");
+  document.getElementById("flip");
 
 const statusEl =
-document.getElementById("status");
+  document.getElementById("status");
 
 
 /* =========================================
-   HIJAB IMAGE
+   NEW HIJAB PNG
 ========================================= */
 
-const asset =
-new Image();
+const asset = new Image();
 
-asset.src =
-"./hijab_ar_asset_v1.png";
+asset.src = "./hijab_ar_asset_v2.png";
 
 
 /* =========================================
-   STATE
+   VARIABLES
 ========================================= */
 
 let landmarker = null;
-
 let stream = null;
 
 let mirror = true;
-
 let running = false;
 
 let lastVideoTime = -1;
 
 
-/* =========================================
-   SMOOTHING
-========================================= */
+/* smoothing */
 
 let smoothX = null;
 let smoothY = null;
-let smoothScale = null;
+
+let smoothScaleX = null;
+let smoothScaleY = null;
+
 let smoothAngle = null;
 
 
 /* =========================================
-   IMPORTANT:
-   COORDINATES OF THE FACE OPENING
-   INSIDE OUR PNG
-=========================================
+   NEW PNG FACE OPENING
 
-PNG size:
+   PNG size:
+   1070 × 1290
 
-1408 × 768
-
-Approximate transparent face opening:
-
-left   = 555
-right  = 835
-
-top    = 105
-bottom = 455
-
-These values correspond to the
-actual Hijab by Eliza PNG.
+   Face opening:
+   X: 358 → 722
+   Y: 152 → 670
 ========================================= */
 
-const OPEN_LEFT   = 555;
-const OPEN_RIGHT  = 835;
-const OPEN_TOP    = 105;
-const OPEN_BOTTOM = 455;
+const OPEN_LEFT = 358;
+const OPEN_RIGHT = 722;
+
+const OPEN_TOP = 152;
+const OPEN_BOTTOM = 670;
 
 const OPEN_WIDTH =
-OPEN_RIGHT - OPEN_LEFT;
+  OPEN_RIGHT - OPEN_LEFT;
 
 const OPEN_HEIGHT =
-OPEN_BOTTOM - OPEN_TOP;
+  OPEN_BOTTOM - OPEN_TOP;
 
 const OPEN_CENTER_X =
-(OPEN_LEFT + OPEN_RIGHT) / 2;
+  (OPEN_LEFT + OPEN_RIGHT) / 2;
+
+const OPEN_CENTER_Y =
+  (OPEN_TOP + OPEN_BOTTOM) / 2;
 
 
 /* =========================================
@@ -314,8 +269,7 @@ const OPEN_CENTER_X =
 
 function setStatus(text){
 
-  statusEl.textContent =
-  text;
+  statusEl.textContent = text;
 
 }
 
@@ -327,16 +281,16 @@ function setStatus(text){
 function resizeCanvas(){
 
   const rect =
-  canvas.getBoundingClientRect();
+    canvas.getBoundingClientRect();
 
   const dpr =
-  window.devicePixelRatio || 1;
+    window.devicePixelRatio || 1;
 
   canvas.width =
-  Math.round(rect.width * dpr);
+    Math.round(rect.width * dpr);
 
   canvas.height =
-  Math.round(rect.height * dpr);
+    Math.round(rect.height * dpr);
 
   ctx.setTransform(
     dpr,
@@ -361,42 +315,37 @@ async function setupLandmarker(){
   );
 
   const vision =
-  await FilesetResolver.forVisionTasks(
-
-    "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-
-  );
+    await FilesetResolver.forVisionTasks(
+      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
+    );
 
 
   landmarker =
-  await FaceLandmarker.createFromOptions(
-    vision,
-    {
+    await FaceLandmarker.createFromOptions(
+      vision,
+      {
 
-      baseOptions:{
+        baseOptions:{
 
-        modelAssetPath:
-        "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+          modelAssetPath:
+            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
 
-        delegate:"GPU"
+          delegate:"GPU"
 
-      },
+        },
 
-      runningMode:"VIDEO",
+        runningMode:"VIDEO",
 
-      numFaces:1,
+        numFaces:1,
 
-      minFaceDetectionConfidence:
-      0.55,
+        minFaceDetectionConfidence:.55,
 
-      minFacePresenceConfidence:
-      0.55,
+        minFacePresenceConfidence:.55,
 
-      minTrackingConfidence:
-      0.55
+        minTrackingConfidence:.55
 
-    }
-  );
+      }
+    );
 
 }
 
@@ -409,8 +358,7 @@ async function startCamera(){
 
   try{
 
-    startBtn.disabled =
-    true;
+    startBtn.disabled = true;
 
 
     if(!landmarker){
@@ -421,34 +369,32 @@ async function startCamera(){
 
 
     stream =
-    await navigator.mediaDevices
-    .getUserMedia({
+      await navigator.mediaDevices.getUserMedia({
 
-      video:{
+        video:{
 
-        facingMode:
-        mirror
-        ? "user"
-        : "environment",
+          facingMode:
+            mirror
+              ? "user"
+              : "environment",
 
-        width:{
-          ideal:1280
+          width:{
+            ideal:1280
+          },
+
+          height:{
+            ideal:720
+          }
+
         },
 
-        height:{
-          ideal:720
-        }
+        audio:false
 
-      },
-
-      audio:false
-
-    });
+      });
 
 
     video.srcObject =
-    stream;
-
+      stream;
 
     await video.play();
 
@@ -456,12 +402,10 @@ async function startCamera(){
     resizeCanvas();
 
 
-    running =
-    true;
-
+    running = true;
 
     startBtn.style.display =
-    "none";
+      "none";
 
 
     setStatus(
@@ -477,7 +421,7 @@ async function startCamera(){
     console.error(error);
 
     startBtn.disabled =
-    false;
+      false;
 
     setStatus(
       "Не удалось открыть камеру"
@@ -489,32 +433,25 @@ async function startCamera(){
 
 
 /* =========================================
-   VIDEO COORDINATES → SCREEN
+   VIDEO → SCREEN
 ========================================= */
 
-function videoPointToScreen(
-  x,
-  y
-){
+function videoPointToScreen(x,y){
 
   const videoW =
-  video.videoWidth;
+    video.videoWidth;
 
   const videoH =
-  video.videoHeight;
-
+    video.videoHeight;
 
   const screenW =
-  canvas.clientWidth;
+    canvas.clientWidth;
 
   const screenH =
-  canvas.clientHeight;
+    canvas.clientHeight;
 
 
-  if(
-    !videoW ||
-    !videoH
-  ){
+  if(!videoW || !videoH){
 
     return {
       x:0,
@@ -524,69 +461,54 @@ function videoPointToScreen(
   }
 
 
-  /*
-    Safari uses object-fit:cover.
-  */
-
   const scale =
-  Math.max(
-
-    screenW / videoW,
-
-    screenH / videoH
-
-  );
+    Math.max(
+      screenW / videoW,
+      screenH / videoH
+    );
 
 
   const displayedW =
-  videoW * scale;
+    videoW * scale;
 
   const displayedH =
-  videoH * scale;
+    videoH * scale;
 
 
   const offsetX =
-  (screenW - displayedW) / 2;
+    (screenW - displayedW) / 2;
 
   const offsetY =
-  (screenH - displayedH) / 2;
+    (screenH - displayedH) / 2;
 
 
   let screenX =
-  x * videoW * scale
-  + offsetX;
-
+    x * videoW * scale +
+    offsetX;
 
   const screenY =
-  y * videoH * scale
-  + offsetY;
+    y * videoH * scale +
+    offsetY;
 
-
-  /*
-    Front camera is mirrored.
-  */
 
   if(mirror){
 
     screenX =
-    screenW - screenX;
+      screenW - screenX;
 
   }
 
 
-  return{
-
+  return {
     x:screenX,
-
     y:screenY
-
   };
 
 }
 
 
 /* =========================================
-   SMOOTH NUMBER
+   SMOOTHING
 ========================================= */
 
 function smooth(
@@ -601,6 +523,7 @@ function smooth(
 
   }
 
+
   return (
     oldValue +
     (newValue - oldValue) *
@@ -609,10 +532,6 @@ function smooth(
 
 }
 
-
-/* =========================================
-   ANGLE SMOOTHING
-========================================= */
 
 function smoothAngleValue(
   oldValue,
@@ -628,7 +547,7 @@ function smoothAngleValue(
 
 
   let difference =
-  newValue - oldValue;
+    newValue - oldValue;
 
 
   while(
@@ -636,7 +555,7 @@ function smoothAngleValue(
   ){
 
     difference -=
-    Math.PI * 2;
+      Math.PI * 2;
 
   }
 
@@ -646,12 +565,12 @@ function smoothAngleValue(
   ){
 
     difference +=
-    Math.PI * 2;
+      Math.PI * 2;
 
   }
 
 
-  return(
+  return (
     oldValue +
     difference * amount
   );
@@ -663,30 +582,19 @@ function smoothAngleValue(
    DRAW HIJAB
 ========================================= */
 
-function drawHijab(
-  landmarks
-){
-
-  /*
-    MediaPipe face landmarks:
-
-    33  = left eye
-    263 = right eye
-    10  = forehead
-    152 = chin
-  */
+function drawHijab(landmarks){
 
   const eye33 =
-  landmarks[33];
+    landmarks[33];
 
   const eye263 =
-  landmarks[263];
+    landmarks[263];
 
   const forehead =
-  landmarks[10];
+    landmarks[10];
 
   const chin =
-  landmarks[152];
+    landmarks[152];
 
 
   if(
@@ -701,91 +609,73 @@ function drawHijab(
   }
 
 
-  /* ---------------------------------------
-     Convert landmarks to screen coordinates
-  --------------------------------------- */
-
   const p33 =
-  videoPointToScreen(
-    eye33.x,
-    eye33.y
-  );
+    videoPointToScreen(
+      eye33.x,
+      eye33.y
+    );
 
 
   const p263 =
-  videoPointToScreen(
-    eye263.x,
-    eye263.y
-  );
+    videoPointToScreen(
+      eye263.x,
+      eye263.y
+    );
 
 
   const pForehead =
-  videoPointToScreen(
-    forehead.x,
-    forehead.y
-  );
+    videoPointToScreen(
+      forehead.x,
+      forehead.y
+    );
 
 
   const pChin =
-  videoPointToScreen(
-    chin.x,
-    chin.y
-  );
+    videoPointToScreen(
+      chin.x,
+      chin.y
+    );
 
 
-  /* ---------------------------------------
-     IMPORTANT FIX:
-
-     On mirrored front camera,
-     anatomical right eye becomes
-     screen-left.
-
-     This prevents the 180° rotation.
-  --------------------------------------- */
+  /* =====================================
+     IMPORTANT:
+     front camera is mirrored
+  ===================================== */
 
   const screenLeftEye =
-  mirror
-  ? p263
-  : p33;
-
+    mirror
+      ? p263
+      : p33;
 
   const screenRightEye =
-  mirror
-  ? p33
-  : p263;
+    mirror
+      ? p33
+      : p263;
 
-
-  /* ---------------------------------------
-     Face center
-  --------------------------------------- */
 
   const centerX =
-  (
-    screenLeftEye.x +
-    screenRightEye.x
-  ) / 2;
+    (
+      screenLeftEye.x +
+      screenRightEye.x
+    ) / 2;
 
 
-  /* ---------------------------------------
-     Face dimensions
-  --------------------------------------- */
-
-  const faceWidth =
-  Math.abs(
-    screenRightEye.x -
-    screenLeftEye.x
-  );
+  const eyeDistance =
+    Math.abs(
+      screenRightEye.x -
+      screenLeftEye.x
+    );
 
 
   const faceHeight =
-  Math.abs(
-    pChin.y -
-    pForehead.y
-  );
+    Math.abs(
+      pChin.y -
+      pForehead.y
+    );
 
 
   if(
-    faceWidth < 30 ||
+    eyeDistance < 25 ||
     faceHeight < 40
   ){
 
@@ -794,136 +684,163 @@ function drawHijab(
   }
 
 
-  /* ---------------------------------------
-     SCALE FROM THE ACTUAL FACE OPENING
-  --------------------------------------- */
+  /* =====================================
+     SCALE
 
-  const scaleFromWidth =
-  faceWidth /
-  OPEN_WIDTH;
+     Eye distance is smaller than
+     full face width, so multiply it.
+  ===================================== */
 
-
-  const scaleFromHeight =
-  faceHeight /
-  OPEN_HEIGHT;
+  const targetOpeningWidth =
+    eyeDistance * 1.55;
 
 
-  /*
-    Slight extra room so the face
-    is completely inside the opening.
-  */
-
-  const scale =
-  Math.max(
-    scaleFromWidth,
-    scaleFromHeight
-  ) * 1.08;
+  const targetOpeningHeight =
+    faceHeight * 1.05;
 
 
-  const drawW =
-  asset.naturalWidth *
-  scale;
+  const scaleX =
+    targetOpeningWidth /
+    OPEN_WIDTH;
 
 
-  const drawH =
-  asset.naturalHeight *
-  scale;
+  const scaleY =
+    targetOpeningHeight /
+    OPEN_HEIGHT;
 
 
-  /* ---------------------------------------
-     POSITION
+  /* =====================================
+     FACE CENTER
+  ===================================== */
 
-     Put the PNG's transparent face opening
-     directly over the detected face.
-  --------------------------------------- */
+  const faceCenterY =
+    (
+      pForehead.y +
+      pChin.y
+    ) / 2;
+
+
+  const targetOpeningCenterX =
+    centerX;
+
+
+  const targetOpeningCenterY =
+    faceCenterY + 3;
+
+
+  /* =====================================
+     POSITION PNG
+  ===================================== */
 
   const targetX =
-  centerX -
-  OPEN_CENTER_X * scale;
+    targetOpeningCenterX -
+    OPEN_CENTER_X * scaleX;
 
 
   const targetY =
-  pForehead.y -
-  OPEN_TOP * scale;
+    targetOpeningCenterY -
+    OPEN_CENTER_Y * scaleY;
 
 
-  /* ---------------------------------------
-     CORRECT HEAD ROTATION
-  --------------------------------------- */
+  /* =====================================
+     ANGLE
 
-  const targetAngle =
-  Math.atan2(
+     Because camera is mirrored,
+     use screen-left/right correctly.
+  ===================================== */
 
-    screenRightEye.y -
-    screenLeftEye.y,
+  let targetAngle =
+    Math.atan2(
+      screenRightEye.y -
+      screenLeftEye.y,
 
-    screenRightEye.x -
-    screenLeftEye.x
+      screenRightEye.x -
+      screenLeftEye.x
+    );
 
-  );
+
+  /* Don't allow strange extreme rotation */
+
+  const maxAngle =
+    0.35;
+
+  targetAngle =
+    Math.max(
+      -maxAngle,
+      Math.min(
+        maxAngle,
+        targetAngle
+      )
+    );
 
 
-  /* ---------------------------------------
-     SMOOTH MOVEMENT
-  --------------------------------------- */
+  /* =====================================
+     SMOOTH
+  ===================================== */
 
   smoothX =
-  smooth(
-    smoothX,
-    targetX,
-    0.35
-  );
+    smooth(
+      smoothX,
+      targetX,
+      .32
+    );
 
 
   smoothY =
-  smooth(
-    smoothY,
-    targetY,
-    0.35
-  );
+    smooth(
+      smoothY,
+      targetY,
+      .32
+    );
 
 
-  smoothScale =
-  smooth(
-    smoothScale,
-    scale,
-    0.30
-  );
+  smoothScaleX =
+    smooth(
+      smoothScaleX,
+      scaleX,
+      .28
+    );
+
+
+  smoothScaleY =
+    smooth(
+      smoothScaleY,
+      scaleY,
+      .28
+    );
 
 
   smoothAngle =
-  smoothAngleValue(
-    smoothAngle,
-    targetAngle,
-    0.30
-  );
+    smoothAngleValue(
+      smoothAngle,
+      targetAngle,
+      .25
+    );
 
 
-  const finalW =
-  asset.naturalWidth *
-  smoothScale;
-
-
-  const finalH =
-  asset.naturalHeight *
-  smoothScale;
-
-
-  /* ---------------------------------------
+  /* =====================================
      DRAW
-  --------------------------------------- */
+  ===================================== */
+
+  const drawW =
+    asset.naturalWidth *
+    smoothScaleX;
+
+
+  const drawH =
+    asset.naturalHeight *
+    smoothScaleY;
+
 
   ctx.save();
 
 
   ctx.translate(
     smoothX +
-    OPEN_CENTER_X *
-    smoothScale,
+    OPEN_CENTER_X * smoothScaleX,
 
     smoothY +
-    OPEN_TOP *
-    smoothScale
+    OPEN_CENTER_Y * smoothScaleY
   );
 
 
@@ -933,7 +850,11 @@ function drawHijab(
 
 
   ctx.globalAlpha =
-  0.98;
+    .98;
+
+
+  ctx.imageSmoothingEnabled =
+    true;
 
 
   ctx.drawImage(
@@ -941,14 +862,14 @@ function drawHijab(
     asset,
 
     -OPEN_CENTER_X *
-    smoothScale,
+      smoothScaleX,
 
-    -OPEN_TOP *
-    smoothScale,
+    -OPEN_CENTER_Y *
+      smoothScaleY,
 
-    finalW,
+    drawW,
 
-    finalH
+    drawH
 
   );
 
@@ -977,27 +898,21 @@ function loop(){
   ){
 
     lastVideoTime =
-    video.currentTime;
+      video.currentTime;
 
 
     const result =
-    landmarker.detectForVideo(
-
-      video,
-
-      performance.now()
-
-    );
+      landmarker.detectForVideo(
+        video,
+        performance.now()
+      );
 
 
     ctx.clearRect(
-
       0,
       0,
-
       canvas.clientWidth,
       canvas.clientHeight
-
     );
 
 
@@ -1014,6 +929,7 @@ function loop(){
       setStatus(
         "Hijab ON · Natural"
       );
+
 
     }else{
 
@@ -1042,52 +958,54 @@ flipBtn.addEventListener(
   async ()=>{
 
     mirror =
-    !mirror;
+      !mirror;
 
 
     if(stream){
 
       stream
-      .getTracks()
-      .forEach(
-        track =>
-        track.stop()
-      );
+        .getTracks()
+        .forEach(
+          track =>
+            track.stop()
+        );
 
 
       stream =
-      null;
-
+        null;
 
       running =
-      false;
+        false;
 
 
       smoothX =
-      null;
+        null;
 
       smoothY =
-      null;
+        null;
 
-      smoothScale =
-      null;
+      smoothScaleX =
+        null;
+
+      smoothScaleY =
+        null;
 
       smoothAngle =
-      null;
+        null;
 
 
       startBtn.style.display =
-      "";
+        "";
 
 
       startBtn.disabled =
-      false;
+        false;
 
 
       video.style.transform =
-      mirror
-      ? "scaleX(-1)"
-      : "scaleX(1)";
+        mirror
+          ? "scaleX(-1)"
+          : "scaleX(1)";
 
 
       setStatus(
@@ -1101,7 +1019,7 @@ flipBtn.addEventListener(
 
 
 /* =========================================
-   EVENTS
+   BUTTON
 ========================================= */
 
 startBtn.addEventListener(
@@ -1109,6 +1027,10 @@ startBtn.addEventListener(
   startCamera
 );
 
+
+/* =========================================
+   EVENTS
+========================================= */
 
 window.addEventListener(
   "resize",
@@ -1123,13 +1045,11 @@ video.addEventListener(
 
 
 asset.onload =
-()=>{
-
-  setStatus(
-    "Нажми «Запустить камеру»"
-  );
-
-};
+  ()=>{
+    setStatus(
+      "Нажми «Запустить камеру»"
+    );
+  };
 
 </script>
 
