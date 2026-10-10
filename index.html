@@ -1,1355 +1,435 @@
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f4eee7">
+<title>Natural Hijab by Eliza</title>
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
-  >
-
-  <title>Hijab by Eliza · Natural V8 Stable</title>
-
-  <style>
-
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html,
-    body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-      font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
-    }
-
-    #app {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: #111;
-    }
-
-    video {
-      position: absolute;
-      inset: 0;
-
-      width: 100%;
-      height: 100%;
-
-      object-fit: cover;
-
-      background: #111;
-    }
-
-    canvas {
-      position: absolute;
-      inset: 0;
-
-      width: 100%;
-      height: 100%;
-
-      pointer-events: none;
-    }
-
-    .top {
-      position: absolute;
-
-      top: env(safe-area-inset-top, 16px);
-      left: 16px;
-      right: 16px;
-
-      z-index: 10;
-
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-
-      pointer-events: none;
-    }
-
-    .brand,
-    .status,
-    .hint {
-      background: rgba(0, 0, 0, .38);
-
-      color: white;
-
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
-    }
-
-    .brand {
-      padding: 9px 13px;
-
-      border-radius: 18px;
-
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .status {
-      padding: 8px 11px;
-
-      border-radius: 18px;
-
-      font-size: 12px;
-    }
-
-    .bottom {
-      position: absolute;
-
-      left: 16px;
-      right: 16px;
-
-      bottom:
-        calc(
-          env(safe-area-inset-bottom, 16px)
-          + 16px
-        );
-
-      z-index: 20;
-
-      display: flex;
-      flex-direction: column;
-
-      align-items: center;
-
-      gap: 10px;
-    }
-
-    button {
-      border: 0;
-
-      border-radius: 24px;
-
-      padding: 13px 20px;
-
-      font-size: 15px;
-      font-weight: 600;
-
-      background: rgba(255, 255, 255, .94);
-
-      color: #222;
-
-      box-shadow:
-        0 5px 20px rgba(0, 0, 0, .25);
-
-      cursor: pointer;
-    }
-
-    button:active {
-      transform: scale(.97);
-    }
-
-    .hint {
-      padding: 8px 13px;
-
-      border-radius: 15px;
-
-      font-size: 12px;
-
-      text-align: center;
-    }
-
-    #start {
-      display: block;
-    }
-
-    #flip {
-      display: none;
-    }
-
-  </style>
-
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#f4eee7;color:#342b27;font-family:-apple-system,BlinkMacSystemFont,sans-serif}
+main{max-width:560px;margin:auto;padding:16px 14px 28px}
+header{text-align:center;padding:5px 0 14px}
+h1{font-family:Georgia,serif;font-weight:500;font-size:29px;margin:0 0 5px}
+.subtitle{font-size:13px;opacity:.75}
+.stage{background:#191715;border-radius:20px;overflow:hidden;aspect-ratio:3/4;max-height:68dvh}
+canvas{width:100%;height:100%;display:block}
+#camera{display:none}
+#status{text-align:center;font-size:13px;line-height:1.5;min-height:38px;padding:10px 4px}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{border:0;border-radius:14px;padding:14px 8px;font-size:14px;font-weight:650;background:white;color:#342b27;cursor:pointer}
+.primary{background:#b8877b;color:white}
+button:disabled{opacity:.45}
+.recording{background:#a33b3b;color:white}
+.note{text-align:center;font-size:12px;line-height:1.5;opacity:.72;margin-top:14px}
+</style>
 </head>
 
-
 <body>
+<main>
+<header>
+<h1>Natural Hijab</h1>
+<div class="subtitle">by Eliza · Виртуальный хиджаб</div>
+</header>
 
-<div id="app">
-
-  <video
-    id="video"
-    playsinline
-    autoplay
-    muted
-  ></video>
-
-  <canvas id="canvas"></canvas>
-
-
-  <div class="top">
-
-    <div class="brand">
-      Hijab by Eliza · Natural
-    </div>
-
-    <div
-      class="status"
-      id="status"
-    >
-      Готово
-    </div>
-
-  </div>
-
-
-  <div class="bottom">
-
-    <button id="start">
-      Включить камеру
-    </button>
-
-    <button id="flip">
-      ↔︎ Поменять камеру
-    </button>
-
-    <div class="hint">
-      Лучше всего работает при хорошем освещении
-    </div>
-
-  </div>
-
+<div class="stage">
+<canvas id="output" width="720" height="960"></canvas>
 </div>
 
+<video id="camera" autoplay playsinline muted></video>
+
+<div id="status">Нажмите «Включить камеру» и разрешите доступ.</div>
+
+<div class="controls">
+<button class="primary" id="startBtn">Включить камеру</button>
+<button id="photoBtn" disabled>📸 Сделать фото</button>
+<button id="recordBtn" disabled>🎥 Начать видео</button>
+<button id="switchBtn" disabled>🔄 Сменить камеру</button>
+<button id="downloadBtn" disabled>⬇️ Сохранить файл</button>
+<button id="stopBtn" disabled>⏹ Остановить камеру</button>
+</div>
+
+<p class="note">
+Фото и видео создаются на устройстве. Во время записи оставьте страницу открытой.
+Поддержка видеозаписи зависит от браузера.
+</p>
+</main>
 
 <script type="module">
-
 import {
-  FaceLandmarker,
-  FilesetResolver
-}
-from
-"https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/vision_bundle.mjs";
+ FaceLandmarker,
+ FilesetResolver
+} from "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/vision_bundle.mjs";
 
+const video=document.getElementById("camera");
+const canvas=document.getElementById("output");
+const ctx=canvas.getContext("2d");
+const statusEl=document.getElementById("status");
 
-/* =========================================================
-   ELEMENTS
-========================================================= */
+const startBtn=document.getElementById("startBtn");
+const photoBtn=document.getElementById("photoBtn");
+const recordBtn=document.getElementById("recordBtn");
+const switchBtn=document.getElementById("switchBtn");
+const downloadBtn=document.getElementById("downloadBtn");
+const stopBtn=document.getElementById("stopBtn");
 
-const video =
-  document.getElementById("video");
+const asset=new Image();
+asset.src="./hijab_ar_asset_v2.png";
 
-const canvas =
-  document.getElementById("canvas");
+let landmarker=null;
+let stream=null;
+let facingMode="user";
+let running=false;
+let rafId=0;
+let smooth=null;
+let recorder=null;
+let chunks=[];
+let isRecording=false;
+let lastFileUrl=null;
+let lastFileName="";
 
-const ctx =
-  canvas.getContext("2d");
+const OPEN_LEFT=358;
+const OPEN_RIGHT=722;
+const OPEN_TOP=152;
+const OPEN_BOTTOM=670;
 
-const startButton =
-  document.getElementById("start");
+const OPEN_WIDTH=OPEN_RIGHT-OPEN_LEFT;
+const OPEN_HEIGHT=OPEN_BOTTOM-OPEN_TOP;
+const CENTER_X=(OPEN_LEFT+OPEN_RIGHT)/2;
+const CENTER_Y=(OPEN_TOP+OPEN_BOTTOM)/2;
 
-const flipButton =
-  document.getElementById("flip");
-
-const status =
-  document.getElementById("status");
-
-
-/* =========================================================
-   HIJAB IMAGE
-========================================================= */
-
-const asset = new Image();
-
-asset.src =
-  "./hijab_ar_asset_v2.png";
-
-let assetLoaded = false;
-
-asset.onload = () => {
-  assetLoaded = true;
-};
-
-
-/* =========================================================
-   HIJAB FACE OPENING
-   CALIBRATED FOR hijab_ar_asset_v2.png
-========================================================= */
-
-const OPEN_LEFT = 358;
-const OPEN_RIGHT = 722;
-
-const OPEN_TOP = 152;
-const OPEN_BOTTOM = 670;
-
-const OPEN_WIDTH =
-  OPEN_RIGHT - OPEN_LEFT;
-
-const OPEN_HEIGHT =
-  OPEN_BOTTOM - OPEN_TOP;
-
-const OPEN_CENTER_X =
-  (OPEN_LEFT + OPEN_RIGHT) / 2;
-
-const OPEN_CENTER_Y =
-  (OPEN_TOP + OPEN_BOTTOM) / 2;
-
-
-/* =========================================================
-   MEDIAPIPE
-========================================================= */
-
-let faceLandmarker = null;
-
-let running = false;
-
-let lastVideoTime = -1;
-
-let mirror = true;
-
-
-/* =========================================================
-   STABLE TRACKING STATE
-========================================================= */
-
-let smoothX = null;
-let smoothY = null;
-
-let smoothScaleX = null;
-let smoothScaleY = null;
-
-
-/*
-  Последнее надёжное положение лица.
-*/
-
-let lastGoodX = null;
-let lastGoodY = null;
-
-let lastGoodScaleX = null;
-let lastGoodScaleY = null;
-
-
-/* =========================================================
-   TRACKING SETTINGS
-========================================================= */
-
-
-/*
-  Чем меньше число —
-  тем плавнее движение.
-
-  Мы специально сделали достаточно
-  сильное сглаживание.
-*/
-
-const POSITION_SMOOTHING = 0.12;
-
-const SCALE_SMOOTHING = 0.08;
-
-
-/*
-  Маленькие изменения координат
-  вообще игнорируем.
-*/
-
-const POSITION_DEADZONE = 2.5;
-
-
-/*
-  Максимальное движение маски
-  за один кадр.
-
-  Это главный предохранитель
-  от скачков.
-*/
-
-const MAX_POSITION_STEP = 7;
-
-
-/*
-  Максимальное изменение масштаба
-  за один кадр.
-*/
-
-const MAX_SCALE_STEP = 0.012;
-
-
-/*
-  Ограничения масштаба.
-*/
-
-const MIN_SCALE = 0.45;
-const MAX_SCALE = 1.45;
-
-
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function clamp(
-  value,
-  min,
-  max
-) {
-
-  return Math.max(
-    min,
-    Math.min(max, value)
-  );
+function setStatus(text){
+ statusEl.textContent=text;
 }
 
-
-function lerp(
-  current,
-  target,
-  amount
-) {
-
-  if (current === null) {
-    return target;
-  }
-
-  return (
-    current +
-    (target - current) * amount
-  );
+function clamp(value,min,max){
+ return Math.max(min,Math.min(max,value));
 }
 
-
-/*
-  Ограничиваем движение
-  за один кадр.
-*/
-
-function limitStep(
-  current,
-  target,
-  maxStep
-) {
-
-  if (current === null) {
-    return target;
-  }
-
-  const difference =
-    target - current;
-
-  if (
-    Math.abs(difference) <=
-    maxStep
-  ) {
-
-    return target;
-  }
-
-  return (
-    current +
-    Math.sign(difference) *
-    maxStep
-  );
+function limitedStep(current,target,maxStep){
+ return current+clamp(target-current,-maxStep,maxStep);
 }
 
+async function initModel(){
+ if(landmarker)return;
 
-/*
-  Deadzone.
+ setStatus("Загружаем распознавание лица…");
 
-  Если изменение совсем маленькое,
-  оставляем старое значение.
-*/
+ const vision=await FilesetResolver.forVisionTasks(
+  "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm"
+ );
 
-function applyDeadzone(
-  current,
-  target,
-  deadzone
-) {
-
-  if (current === null) {
-    return target;
-  }
-
-  if (
-    Math.abs(target - current) <
-    deadzone
-  ) {
-
-    return current;
-  }
-
-  return target;
+ landmarker=await FaceLandmarker.createFromOptions(vision,{
+  baseOptions:{
+   modelAssetPath:"https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
+   delegate:"CPU"
+  },
+  runningMode:"VIDEO",
+  numFaces:1
+ });
 }
 
+async function startCamera(){
+ if(running)return;
 
-/* =========================================================
-   RESIZE
-========================================================= */
+ try{
+  if(!navigator.mediaDevices?.getUserMedia){
+   throw Error("Откройте сайт в Safari по HTTPS.");
+  }
 
-function resizeCanvas() {
+  await initModel();
 
-  const rect =
-    canvas.getBoundingClientRect();
+  stream=await navigator.mediaDevices.getUserMedia({
+   audio:false,
+   video:{
+    facingMode:{ideal:facingMode},
+    width:{ideal:720},
+    height:{ideal:960}
+   }
+  });
 
-  const dpr =
-    Math.min(
-      window.devicePixelRatio || 1,
-      2
-    );
+  video.srcObject=stream;
 
-  canvas.width =
-    Math.round(
-      rect.width * dpr
-    );
+  await new Promise((resolve,reject)=>{
+   video.onloadedmetadata=resolve;
+   video.onerror=()=>reject(Error("Не удалось открыть камеру."));
+  });
 
-  canvas.height =
-    Math.round(
-      rect.height * dpr
-    );
+  await video.play();
 
-  ctx.setTransform(
-    dpr,
-    0,
-    0,
-    dpr,
-    0,
-    0
-  );
+  running=true;
+  smooth=null;
+
+  startBtn.disabled=true;
+  photoBtn.disabled=false;
+  recordBtn.disabled=false;
+  switchBtn.disabled=false;
+  stopBtn.disabled=false;
+
+  setStatus("Камера включена. Посмотрите прямо в камеру.");
+  renderLoop();
+
+ }catch(error){
+  setStatus("Ошибка камеры: "+(error.message||"проверьте разрешение камеры."));
+  startBtn.disabled=false;
+ }
 }
 
+function renderLoop(){
+ if(!running)return;
 
-window.addEventListener(
-  "resize",
-  resizeCanvas
-);
+ if(video.readyState>=2 && video.videoWidth){
 
-
-/* =========================================================
-   VIDEO → SCREEN
-========================================================= */
-
-function videoPointToScreen(point) {
-
-  const vw =
-    video.videoWidth;
-
-  const vh =
-    video.videoHeight;
-
-  const cw =
-    canvas.clientWidth;
-
-  const ch =
-    canvas.clientHeight;
-
-
-  if (
-    !vw ||
-    !vh ||
-    !cw ||
-    !ch
-  ) {
-
-    return {
-      x: 0,
-      y: 0
-    };
-  }
-
-
-  /*
-    Same "cover" calculation
-    as the video element.
-  */
-
-  const scale =
-    Math.max(
-      cw / vw,
-      ch / vh
-    );
-
-
-  const displayedWidth =
-    vw * scale;
-
-  const displayedHeight =
-    vh * scale;
-
-
-  const offsetX =
-    (cw - displayedWidth) / 2;
-
-  const offsetY =
-    (ch - displayedHeight) / 2;
-
-
-  let x =
-    point.x *
-    displayedWidth +
-    offsetX;
-
-  let y =
-    point.y *
-    displayedHeight +
-    offsetY;
-
-
-  /*
-    Front camera is mirrored.
-  */
-
-  if (mirror) {
-
-    x =
-      cw - x;
-  }
-
-
-  return {
-    x,
-    y
-  };
-}
-
-
-/* =========================================================
-   CREATE FACE LANDMARKER
-========================================================= */
-
-async function createFaceLandmarker() {
-
-  status.textContent =
-    "Загрузка…";
-
-
-  const vision =
-    await FilesetResolver.forVisionTasks(
-
-      "https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision/wasm"
-
-    );
-
-
-  faceLandmarker =
-    await FaceLandmarker.createFromOptions(
-
-      vision,
-
-      {
-
-        baseOptions: {
-
-          modelAssetPath:
-            "https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task",
-
-          delegate:
-            "GPU"
-        },
-
-
-        runningMode:
-          "VIDEO",
-
-
-        numFaces:
-          1,
-
-
-        minFaceDetectionConfidence:
-          0.5,
-
-
-        minFacePresenceConfidence:
-          0.5,
-
-
-        minTrackingConfidence:
-          0.5,
-
-
-        outputFaceBlendshapes:
-          false,
-
-
-        outputFacialTransformationMatrixes:
-          false
-
-      }
-
-    );
-
-
-  status.textContent =
-    "Готово";
-}
-
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-async function startCamera() {
-
-  try {
-
-    if (!faceLandmarker) {
-
-      await createFaceLandmarker();
-
-    }
-
-
-    if (video.srcObject) {
-
-      video.srcObject
-        .getTracks()
-        .forEach(
-          track =>
-            track.stop()
-        );
-
-    }
-
-
-    const stream =
-      await navigator.mediaDevices
-        .getUserMedia({
-
-          video: {
-
-            facingMode:
-              mirror
-                ? "user"
-                : "environment",
-
-            width: {
-              ideal: 1280
-            },
-
-            height: {
-              ideal: 720
-            },
-
-            frameRate: {
-              ideal: 30,
-              max: 30
-            }
-
-          },
-
-          audio: false
-
-        });
-
-
-    video.srcObject =
-      stream;
-
-
-    await video.play();
-
-
-    video.style.transform =
-      mirror
-        ? "scaleX(-1)"
-        : "scaleX(1)";
-
-
-    startButton.style.display =
-      "none";
-
-    flipButton.style.display =
-      "block";
-
-
-    status.textContent =
-      "Ищем лицо…";
-
-
-    resizeCanvas();
-
-    resetTracking();
-
-
-    running = true;
-
-    requestAnimationFrame(
-      render
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-    status.textContent =
-      "Не удалось включить камеру";
-
-    startButton.style.display =
-      "block";
-
-  }
-
-}
-
-
-/* =========================================================
-   RESET TRACKING
-========================================================= */
-
-function resetTracking() {
-
-  smoothX = null;
-  smoothY = null;
-
-  smoothScaleX = null;
-  smoothScaleY = null;
-
-  lastGoodX = null;
-  lastGoodY = null;
-
-  lastGoodScaleX = null;
-  lastGoodScaleY = null;
-
-}
-
-
-/* =========================================================
-   DRAW HIJAB
-========================================================= */
-
-function drawHijab(
-  landmarks
-) {
-
-  if (!assetLoaded) {
-    return;
-  }
-
-
-  /*
-    We intentionally use only
-    stable basic landmarks.
-
-    33  = eye
-    263 = eye
-    10  = forehead
-    152 = chin
-  */
-
-
-  const p33 =
-    videoPointToScreen(
-      landmarks[33]
-    );
-
-
-  const p263 =
-    videoPointToScreen(
-      landmarks[263]
-    );
-
-
-  const p10 =
-    videoPointToScreen(
-      landmarks[10]
-    );
-
-
-  const p152 =
-    videoPointToScreen(
-      landmarks[152]
-    );
-
-
-  /* =======================================================
-     FACE CENTER
-  ======================================================= */
-
-
-  /*
-    Center between the eyes.
-
-    This is much more stable than
-    the V7 nose/cheek calculation.
-  */
-
-  const eyeCenterX =
-    (
-      p33.x +
-      p263.x
-    ) / 2;
-
-
-  const faceCenterY =
-    (
-      p10.y +
-      p152.y
-    ) / 2;
-
-
-  /* =======================================================
-     FACE SIZE
-  ======================================================= */
-
-  const eyeDistance =
-    Math.abs(
-      p263.x -
-      p33.x
-    );
-
-
-  const faceHeight =
-    Math.abs(
-      p152.y -
-      p10.y
-    );
-
-
-  /*
-    If tracking gives an impossible
-    value, don't move the hijab.
-  */
-
-  if (
-    eyeDistance < 15 ||
-    faceHeight < 40
-  ) {
-
-    return;
-  }
-
-
-  /* =======================================================
-     TARGET OPENING
-  ======================================================= */
-
-  let targetOpeningWidth =
-    eyeDistance * 1.55;
-
-
-  let targetOpeningHeight =
-    faceHeight * 1.05;
-
-
-  /* =======================================================
-     TARGET SCALE
-  ======================================================= */
-
-  let targetScaleX =
-    targetOpeningWidth /
-    OPEN_WIDTH;
-
-
-  let targetScaleY =
-    targetOpeningHeight /
-    OPEN_HEIGHT;
-
-
-  targetScaleX =
-    clamp(
-      targetScaleX,
-      MIN_SCALE,
-      MAX_SCALE
-    );
-
-
-  targetScaleY =
-    clamp(
-      targetScaleY,
-      MIN_SCALE,
-      MAX_SCALE
-    );
-
-
-  /* =======================================================
-     TARGET POSITION
-  ======================================================= */
-
-  /*
-    No yaw.
-    No cheek calculation.
-    No nose calculation.
-    No artificial shift.
-  */
-
-  const targetOpeningCenterX =
-    eyeCenterX;
-
-
-  const targetOpeningCenterY =
-    faceCenterY + 3;
-
-
-  let targetX =
-    targetOpeningCenterX -
-    OPEN_CENTER_X *
-    targetScaleX;
-
-
-  let targetY =
-    targetOpeningCenterY -
-    OPEN_CENTER_Y *
-    targetScaleY;
-
-
-  /* =======================================================
-     FIRST FRAME
-  ======================================================= */
-
-  if (
-    smoothX === null ||
-    smoothY === null
-  ) {
-
-    smoothX =
-      targetX;
-
-    smoothY =
-      targetY;
-
-    smoothScaleX =
-      targetScaleX;
-
-    smoothScaleY =
-      targetScaleY;
-
-
-    lastGoodX =
-      targetX;
-
-    lastGoodY =
-      targetY;
-
-    lastGoodScaleX =
-      targetScaleX;
-
-    lastGoodScaleY =
-      targetScaleY;
-
-  }
-
-
-  /* =======================================================
-     POSITION STABILITY
-  ======================================================= */
-
-
-  targetX =
-    applyDeadzone(
-      smoothX,
-      targetX,
-      POSITION_DEADZONE
-    );
-
-
-  targetY =
-    applyDeadzone(
-      smoothY,
-      targetY,
-      POSITION_DEADZONE
-    );
-
-
-  /*
-    Prevent sudden jumps.
-  */
-
-  targetX =
-    limitStep(
-      smoothX,
-      targetX,
-      MAX_POSITION_STEP
-    );
-
-
-  targetY =
-    limitStep(
-      smoothY,
-      targetY,
-      MAX_POSITION_STEP
-    );
-
-
-  /* =======================================================
-     SCALE STABILITY
-  ======================================================= */
-
-  targetScaleX =
-    limitStep(
-      smoothScaleX,
-      targetScaleX,
-      MAX_SCALE_STEP
-    );
-
-
-  targetScaleY =
-    limitStep(
-      smoothScaleY,
-      targetScaleY,
-      MAX_SCALE_STEP
-    );
-
-
-  /* =======================================================
-     STRONG SMOOTHING
-  ======================================================= */
-
-  smoothX =
-    lerp(
-      smoothX,
-      targetX,
-      POSITION_SMOOTHING
-    );
-
-
-  smoothY =
-    lerp(
-      smoothY,
-      targetY,
-      POSITION_SMOOTHING
-    );
-
-
-  smoothScaleX =
-    lerp(
-      smoothScaleX,
-      targetScaleX,
-      SCALE_SMOOTHING
-    );
-
-
-  smoothScaleY =
-    lerp(
-      smoothScaleY,
-      targetScaleY,
-      SCALE_SMOOTHING
-    );
-
-
-  /* =======================================================
-     SAVE LAST GOOD POSITION
-  ======================================================= */
-
-  lastGoodX =
-    smoothX;
-
-  lastGoodY =
-    smoothY;
-
-  lastGoodScaleX =
-    smoothScaleX;
-
-  lastGoodScaleY =
-    smoothScaleY;
-
-
-  /* =======================================================
-     DRAW
-  ======================================================= */
-
+  // Отражённый предпросмотр, как в передней камере телефона.
   ctx.save();
-
-
-  /*
-    IMPORTANT:
-
-    No rotation.
-
-    No skew.
-
-    No pseudo 3D.
-
-    No transform based on nose.
-
-    This keeps the hijab stable.
-  */
-
-
-  const drawCenterX =
-    smoothX +
-    OPEN_CENTER_X *
-    smoothScaleX;
-
-
-  const drawCenterY =
-    smoothY +
-    OPEN_CENTER_Y *
-    smoothScaleY;
-
-
-  ctx.translate(
-    drawCenterX,
-    drawCenterY
-  );
-
-
-  ctx.drawImage(
-
-    asset,
-
-    -OPEN_CENTER_X *
-      smoothScaleX,
-
-    -OPEN_CENTER_Y *
-      smoothScaleY,
-
-    asset.naturalWidth *
-      smoothScaleX,
-
-    asset.naturalHeight *
-      smoothScaleY
-
-  );
-
-
+  ctx.translate(canvas.width,0);
+  ctx.scale(-1,1);
+  ctx.drawImage(video,0,0,canvas.width,canvas.height);
   ctx.restore();
 
-}
+  try{
+   const result=landmarker.detectForVideo(video,performance.now());
 
+   if(result.faceLandmarks?.length){
+    const lm=result.faceLandmarks[0];
 
-/* =========================================================
-   RENDER LOOP
-========================================================= */
+    const p33=lm[33];
+    const p263=lm[263];
+    const p10=lm[10];
+    const p152=lm[152];
 
-async function render() {
+    const eyeCenterX=((1-p33.x)+(1-p263.x))*canvas.width/2;
+    const eyeDistance=Math.abs(p263.x-p33.x)*canvas.width;
 
-  if (!running) {
-    return;
-  }
+    const foreheadY=p10.y*canvas.height;
+    const chinY=p152.y*canvas.height;
+    const faceHeight=Math.abs(chinY-foreheadY);
 
+    const scaleX=clamp((eyeDistance*1.55)/OPEN_WIDTH,.45,1.45);
+    const scaleY=clamp((faceHeight*1.05)/OPEN_HEIGHT,.45,1.45);
 
-  if (
-    video.readyState >= 2 &&
-    video.currentTime !==
-      lastVideoTime
-  ) {
+    const targetCenterY=(foreheadY+chinY)/2+3;
+    const targetX=eyeCenterX-CENTER_X*scaleX;
+    const targetY=targetCenterY-CENTER_Y*scaleY;
 
-    lastVideoTime =
-      video.currentTime;
+    if(!smooth){
+     smooth={x:targetX,y:targetY,sx:scaleX,sy:scaleY};
+    }else{
+     let dx=targetX-smooth.x;
+     let dy=targetY-smooth.y;
 
+     if(Math.abs(dx)<2.5)dx=0;
+     if(Math.abs(dy)<2.5)dy=0;
 
-    try {
+     smooth.x=limitedStep(smooth.x,smooth.x+dx*.12,7);
+     smooth.y=limitedStep(smooth.y,smooth.y+dy*.12,7);
 
-      const result =
-        faceLandmarker.detectForVideo(
-
-          video,
-
-          performance.now()
-
-        );
-
-
-      /*
-        Reset canvas correctly.
-      */
-
-      ctx.save();
-
-      ctx.setTransform(
-        1,
-        0,
-        0,
-        1,
-        0,
-        0
-      );
-
-      ctx.clearRect(
-        0,
-        0,
-        canvas.width,
-        canvas.height
-      );
-
-      ctx.restore();
-
-
-      if (
-        result.faceLandmarks &&
-        result.faceLandmarks.length > 0
-      ) {
-
-        status.textContent =
-          "Хиджаб активен";
-
-
-        drawHijab(
-          result.faceLandmarks[0]
-        );
-
-
-      } else {
-
-        status.textContent =
-          "Ищем лицо…";
-
-
-        /*
-          IMPORTANT:
-
-          Don't reset the position
-          just because one frame
-          lost the face.
-
-          This prevents the hijab
-          from jumping.
-        */
-
-      }
-
-
-    } catch (error) {
-
-      console.error(error);
-
+     smooth.sx=limitedStep(smooth.sx,smooth.sx+(scaleX-smooth.sx)*.08,.012);
+     smooth.sy=limitedStep(smooth.sy,smooth.sy+(scaleY-smooth.sy)*.08,.012);
     }
 
+    if(asset.complete&&asset.naturalWidth){
+     ctx.drawImage(
+      asset,
+      smooth.x,
+      smooth.y,
+      asset.naturalWidth*smooth.sx,
+      asset.naturalHeight*smooth.sy
+     );
+    }
+
+   }else if(asset.complete&&asset.naturalWidth&&smooth){
+    ctx.drawImage(
+     asset,
+     smooth.x,
+     smooth.y,
+     asset.naturalWidth*smooth.sx,
+     asset.naturalHeight*smooth.sy
+    );
+   }
+
+  }catch(error){
+   console.warn("Face tracking error",error);
   }
+ }
 
-
-  requestAnimationFrame(
-    render
-  );
-
+ rafId=requestAnimationFrame(renderLoop);
 }
 
+function setFile(blob,name){
+ if(lastFileUrl)URL.revokeObjectURL(lastFileUrl);
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+ lastFileUrl=URL.createObjectURL(blob);
+ lastFileName=name;
 
-startButton.addEventListener(
-  "click",
-  startCamera
-);
+ downloadBtn.disabled=false;
 
+ setStatus("Файл готов! Нажмите «Сохранить файл».");
+}
 
-flipButton.addEventListener(
-  "click",
-  async () => {
-
-    mirror =
-      !mirror;
-
-    resetTracking();
-
-    await startCamera();
-
+function takePhoto(){
+ canvas.toBlob(blob=>{
+  if(blob){
+   setFile(blob,"natural-hijab-photo.png");
+  }else{
+   setStatus("Не удалось сделать фото. Попробуйте ещё раз.");
   }
-);
+ },"image/png");
+}
 
+function getVideoMime(){
+ const types=[
+  "video/mp4;codecs=h264",
+  "video/mp4",
+  "video/webm;codecs=vp8",
+  "video/webm"
+ ];
 
-/* =========================================================
-   INITIAL
-========================================================= */
+ return types.find(type=>
+  window.MediaRecorder&&MediaRecorder.isTypeSupported(type)
+ )||"";
+}
 
-resizeCanvas();
+function startRecording(){
+ if(!canvas.captureStream||!window.MediaRecorder){
+  setStatus("Запись видео не поддерживается этим браузером. Попробуйте обновлённый Safari или Chrome.");
+  return;
+ }
 
+ try{
+  const capture=canvas.captureStream(24);
+  const mime=getVideoMime();
+
+  recorder=new MediaRecorder(
+   capture,
+   mime?{mimeType:mime}:undefined
+  );
+
+  chunks=[];
+
+  recorder.ondataavailable=event=>{
+   if(event.data&&event.data.size){
+    chunks.push(event.data);
+   }
+  };
+
+  recorder.onerror=()=>{
+   setStatus("Ошибка записи. Попробуйте ещё раз.");
+  };
+
+  recorder.onstop=()=>{
+   const type=recorder.mimeType||mime||"video/webm";
+   const extension=type.includes("mp4")?"mp4":"webm";
+
+   const blob=new Blob(chunks,{type});
+
+   setFile(blob,"natural-hijab-video."+extension);
+
+   capture.getTracks().forEach(track=>track.stop());
+
+   isRecording=false;
+   recordBtn.classList.remove("recording");
+   recordBtn.textContent="🎥 Начать видео";
+
+   photoBtn.disabled=false;
+   switchBtn.disabled=false;
+  };
+
+  recorder.start(250);
+
+  isRecording=true;
+  recordBtn.classList.add("recording");
+  recordBtn.textContent="⏹ Остановить запись";
+
+  photoBtn.disabled=true;
+  switchBtn.disabled=true;
+
+  setStatus("Идёт запись. Нажмите «Остановить запись», когда закончите.");
+
+ }catch(error){
+  setStatus("Не удалось начать запись: "+error.message);
+ }
+}
+
+function stopRecording(){
+ if(recorder&&isRecording&&recorder.state!=="inactive"){
+  recorder.stop();
+ }
+}
+
+async function switchCamera(){
+ if(isRecording){
+  setStatus("Сначала остановите запись.");
+  return;
+ }
+
+ const wasRunning=running;
+
+ await stopCamera();
+
+ facingMode=facingMode==="user"?"environment":"user";
+
+ if(wasRunning){
+  await startCamera();
+ }
+}
+
+async function stopCamera(){
+ running=false;
+ cancelAnimationFrame(rafId);
+
+ if(isRecording)stopRecording();
+
+ if(stream){
+  stream.getTracks().forEach(track=>track.stop());
+  stream=null;
+ }
+
+ video.srcObject=null;
+ smooth=null;
+
+ startBtn.disabled=false;
+ photoBtn.disabled=true;
+ recordBtn.disabled=true;
+ switchBtn.disabled=true;
+ stopBtn.disabled=true;
+
+ setStatus("Камера остановлена. Нажмите «Включить камеру», чтобы начать снова.");
+}
+
+startBtn.addEventListener("click",startCamera);
+photoBtn.addEventListener("click",takePhoto);
+
+recordBtn.addEventListener("click",()=>{
+ if(isRecording)stopRecording();
+ else startRecording();
+});
+
+switchBtn.addEventListener("click",switchCamera);
+stopBtn.addEventListener("click",stopCamera);
+
+downloadBtn.addEventListener("click",()=>{
+ if(!lastFileUrl)return;
+
+ const link=document.createElement("a");
+ link.href=lastFileUrl;
+ link.download=lastFileName;
+
+ document.body.appendChild(link);
+ link.click();
+ link.remove();
+
+ setStatus("Если файл не сохранился автоматически, откройте его через меню браузера и выберите «Поделиться» → «Сохранить в Файлы».");
+});
+
+window.addEventListener("pagehide",()=>{
+ if(stream)stream.getTracks().forEach(track=>track.stop());
+ if(lastFileUrl)URL.revokeObjectURL(lastFileUrl);
+});
+
+ctx.fillStyle="#191715";
+ctx.fillRect(0,0,canvas.width,canvas.height);
 </script>
-
 </body>
-
 </html>
